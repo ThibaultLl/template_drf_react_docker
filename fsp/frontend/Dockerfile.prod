@@ -1,0 +1,25 @@
+# Dockerfile - Frontend
+# Utilisation d'une image Node.js pour build React
+FROM node:18 as build
+
+# Définir le répertoire de travail dans le conteneur
+WORKDIR /app
+
+# Copier le fichier de dépendances
+COPY frontend/package.json /app/
+
+# Installer les dépendances du frontend
+RUN npm install
+
+# Copier le reste des fichiers du frontend
+COPY frontend /app/
+
+# Construire le projet
+RUN npm run build
+
+# Utilisation d'une image nginx pour servir l'application
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Exposer le port 80 (par défaut pour HTTP)
+EXPOSE 80
